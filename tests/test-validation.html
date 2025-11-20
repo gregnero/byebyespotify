@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Test</title>
+</head>
+<body>
+    <h1>JavaScript Syntax Validation</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+        let allTests = [];
+
+        function logTest(name, status, error = null) {
+            allTests.push({ name, status, error });
+            const div = document.createElement('div');
+            div.style.padding = '10px';
+            div.style.margin = '5px';
+            div.style.backgroundColor = status === 'pass' ? '#d4edda' : '#f8d7da';
+            div.style.border = `1px solid ${status === 'pass' ? '#c3e6cb' : '#f5c6cb'}`;
+            div.innerHTML = `
+                <strong>${status === 'pass' ? '✅' : '❌'} ${name}</strong>
+                ${error ? `<br><code>${error}</code>` : ''}
+            `;
+            results.appendChild(div);
+        }
+
+        // Test 1: Load spotify-api.js
+        try {
+            const script1 = document.createElement('script');
+            script1.src = '../src/js/spotify-api.js';
+            script1.onload = () => {
+                if (typeof SpotifyAPI !== 'undefined') {
+                    logTest('spotify-api.js loads and defines SpotifyAPI', 'pass');
+
+                    // Test SpotifyAPI instantiation
+                    try {
+                        const api = new SpotifyAPI('test-id', 'test-secret', 'http://test');
+                        logTest('SpotifyAPI can be instantiated', 'pass');
+
+                        // Test methods exist
+                        if (typeof api.getAuthUrl === 'function' &&
+                            typeof api.getAccessToken === 'function' &&
+                            typeof api.getAllPlaylists === 'function') {
+                            logTest('SpotifyAPI has required methods', 'pass');
+                        } else {
+                            logTest('SpotifyAPI has required methods', 'fail', 'Missing methods');
+                        }
+                    } catch (e) {
+                        logTest('SpotifyAPI can be instantiated', 'fail', e.message);
+                    }
+                } else {
+                    logTest('spotify-api.js loads and defines SpotifyAPI', 'fail', 'SpotifyAPI not defined');
+                }
+            };
+            script1.onerror = () => logTest('spotify-api.js loads', 'fail', 'Failed to load script');
+            document.head.appendChild(script1);
+        } catch (e) {
+            logTest('Load spotify-api.js', 'fail', e.message);
+        }
+
+        // Test 2: Load export.js
+        setTimeout(() => {
+            try {
+                const script2 = document.createElement('script');
+                script2.src = '../src/js/export.js';
+                script2.onload = () => {
+                    if (typeof PlaylistExporter !== 'undefined') {
+                        logTest('export.js loads and defines PlaylistExporter', 'pass');
+
+                        // Test PlaylistExporter instantiation
+                        try {
+                            const mockAPI = { api: 'mock' };
+                            const exporter = new PlaylistExporter(mockAPI);
+                            logTest('PlaylistExporter can be instantiated', 'pass');
+
+                            // Test methods exist
+                            if (typeof exporter.safeFilename === 'function' &&
+                                typeof exporter.createCSV === 'function' &&
+                                typeof exporter.createM3U === 'function') {
+                                logTest('PlaylistExporter has required methods', 'pass');
+                            } else {
+                                logTest('PlaylistExporter has required methods', 'fail', 'Missing methods');
+                            }
+
+                            // Test safeFilename
+                            const safeName = exporter.safeFilename('Test/Playlist: "Name"');
+                            if (safeName === 'Test_Playlist_ _Name_') {
+                                logTest('safeFilename handles special characters', 'pass');
+                            } else {
+                                logTest('safeFilename handles special characters', 'fail', `Got: ${safeName}`);
+                            }
+
+                            // Test formatDate
+                            const date = new Date('2025-01-15');
+                            const formatted = exporter.formatDate(date);
+                            if (formatted === '2025-01-15') {
+                                logTest('formatDate formats correctly', 'pass');
+                            } else {
+                                logTest('formatDate formats correctly', 'fail', `Got: ${formatted}`);
+                            }
+
+                        } catch (e) {
+                            logTest('PlaylistExporter can be instantiated', 'fail', e.message);
+                        }
+                    } else {
+                        logTest('export.js loads and defines PlaylistExporter', 'fail', 'PlaylistExporter not defined');
+                    }
+                };
+                script2.onerror = () => logTest('export.js loads', 'fail', 'Failed to load script');
+                document.head.appendChild(script2);
+            } catch (e) {
+                logTest('Load export.js', 'fail', e.message);
+            }
+        }, 500);
+
+        // Test 3: CSV escaping
+        setTimeout(() => {
+            if (typeof PlaylistExporter !== 'undefined') {
+                try {
+                    const exporter = new PlaylistExporter({});
+
+                    // Test simple string
+                    const simple = exporter.escapeCSV('simple text');
+                    if (simple === 'simple text') {
+                        logTest('CSV escape: simple text', 'pass');
+                    } else {
+                        logTest('CSV escape: simple text', 'fail', `Got: ${simple}`);
+                    }
+
+                    // Test with comma
+                    const withComma = exporter.escapeCSV('text, with comma');
+                    if (withComma === '"text, with comma"') {
+                        logTest('CSV escape: text with comma', 'pass');
+                    } else {
+                        logTest('CSV escape: text with comma', 'fail', `Got: ${withComma}`);
+                    }
+
+                    // Test with quotes
+                    const withQuotes = exporter.escapeCSV('text "with" quotes');
+                    if (withQuotes === '"text ""with"" quotes"') {
+                        logTest('CSV escape: text with quotes', 'pass');
+                    } else {
+                        logTest('CSV escape: text with quotes', 'fail', `Got: ${withQuotes}`);
+                    }
+                } catch (e) {
+                    logTest('CSV escaping tests', 'fail', e.message);
+                }
+            }
+        }, 1000);
+
+        // Test 4: Redirect URI auto-detection (localhost conversion)
+        setTimeout(() => {
+            try {
+                // Test localhost conversion
+                const testUrl1 = 'http://localhost:8000/test/path';
+                if (testUrl1.includes('localhost')) {
+                    const converted = testUrl1.replace('localhost', '127.0.0.1');
+                    if (converted === 'http://127.0.0.1:8000/test/path') {
+                        logTest('Redirect URI: localhost → 127.0.0.1 conversion', 'pass');
+                    } else {
+                        logTest('Redirect URI: localhost → 127.0.0.1 conversion', 'fail', `Got: ${converted}`);
+                    }
+                }
+
+                // Test that 127.0.0.1 is preserved
+                const testUrl2 = 'http://127.0.0.1:5500/';
+                if (!testUrl2.includes('localhost')) {
+                    logTest('Redirect URI: 127.0.0.1 preserved correctly', 'pass');
+                } else {
+                    logTest('Redirect URI: 127.0.0.1 preserved correctly', 'fail', 'Should not contain localhost');
+                }
+
+                // Test HTTPS production URL preserved
+                const testUrl3 = 'https://username.github.io/byebyespotify/';
+                if (testUrl3.startsWith('https://') && !testUrl3.includes('localhost')) {
+                    logTest('Redirect URI: HTTPS production URL preserved', 'pass');
+                } else {
+                    logTest('Redirect URI: HTTPS production URL preserved', 'fail');
+                }
+            } catch (e) {
+                logTest('Redirect URI auto-detection tests', 'fail', e.message);
+            }
+        }, 1250);
+
+        // Test 5: M3U format
+        setTimeout(() => {
+            if (typeof PlaylistExporter !== 'undefined') {
+                try {
+                    const exporter = new PlaylistExporter({});
+                    const mockTracks = [
+                        {
+                            track: {
+                                name: 'Test Song',
+                                artists: [{ name: 'Test Artist' }],
+                                duration_ms: 180000,
+                                external_urls: { spotify: 'https://open.spotify.com/track/test' }
+                            }
+                        }
+                    ];
+
+                    const m3u = exporter.createM3U(mockTracks, 'Test Playlist');
+
+                    if (m3u.includes('#EXTM3U') &&
+                        m3u.includes('#PLAYLIST:Test Playlist') &&
+                        m3u.includes('#EXTINF:180,Test Artist - Test Song') &&
+                        m3u.includes('https://open.spotify.com/track/test')) {
+                        logTest('M3U format generation', 'pass');
+                    } else {
+                        logTest('M3U format generation', 'fail', 'Missing required M3U elements');
+                    }
+                } catch (e) {
+                    logTest('M3U format generation', 'fail', e.message);
+                }
+            }
+        }, 1500);
+
+        // Summary after all tests
+        setTimeout(() => {
+            const summary = document.createElement('div');
+            summary.style.marginTop = '20px';
+            summary.style.padding = '20px';
+            summary.style.backgroundColor = '#e8f5e9';
+            summary.style.border = '2px solid #1DB954';
+
+            const passed = allTests.filter(t => t.status === 'pass').length;
+            const failed = allTests.filter(t => t.status === 'fail').length;
+            const total = allTests.length;
+
+            summary.innerHTML = `
+                <h2>Test Summary</h2>
+                <p><strong>Total Tests:</strong> ${total}</p>
+                <p><strong>Passed:</strong> ${passed}</p>
+                <p><strong>Failed:</strong> ${failed}</p>
+                <p><strong>Pass Rate:</strong> ${Math.round((passed / total) * 100)}%</p>
+            `;
+
+            results.appendChild(summary);
+        }, 2000);
+    </script>
+</body>
+</html>

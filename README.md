@@ -1,55 +1,356 @@
-# Bye Bye Spotify ! <3
-You've worked so hard on your playlists. Carefully choosing cover pictures, writing angsty and deep descriptions with the hope that ur crush will see them and fall in love with you and run away with you into the Italian countryside ... no? Just me? Awkward...
+# Bye Bye Spotify - Web Application
 
-Whatever the case, the playlist in its entirety is an art form. The cover image and the description are critically important to the integrity and personality of the playlist. Here is a way that you can export all of these things.
+A client-side web application for exporting Spotify playlists with complete preservation of covers, descriptions, and metadata.
 
-This lets you archive and export all of your playlists with a single python script. This way, you can ditch Spotify and rest easy knowing that all of your hard work making playlists will be around in your personal files long after you're gone.
+## Features
 
-I've tried to make this process as simple as possible but I'm not an app developer so there's lots of room for improvement but this should work fine for now. It would be cool to have a website that does this or a nice app, but a single executable python script seems like a managable place to start. I also tried getting this to run in Google Collab but had some issues... Anyways, let's get started.
+- **Complete Playlist Preservation**
+  - Custom cover images
+  - Playlist descriptions
+  - Full track metadata including ISRC codes
+  - Date-stamped folder organization
 
-# Step 1: Create a Spotify App
-The purpose of this step is to create a pipeline by which our code can talk to your Spotify library. This isn't as tricky as it sounds. Go here: https://developer.spotify.com/dashboard and then hit "Create app" . Fill in the following fields:
-* App name: this can be whatever. I'd suggest "byespotify"
-* App description: this can also be whatever.
-* Redirect URI: put in: http://127.0.0.1:8888/callback. Make sure you hit "Add"
-* Check "understand and agree" box.
-* Hit "Save"
+- **Multiple Export Formats**
+  - CSV (with ISRC codes for accurate track matching)
+  - M3U (universal playlist format)
+  - Description text files
+  - Cover images (JPEG)
 
-Congrats, you've made the app!
+- **Privacy-First Architecture**
+  - All processing happens in your browser
+  - Your data never leaves your device
+  - No backend servers required
+  - Fully transparent client-side code
 
-On the app page, there will be three crucial pieces of information you need, which you can copy and paste:
+- **User-Friendly Interface**
+  - Step-by-step guided process
+  - Progress indicators
+  - Clear error messages
+  - Mobile-responsive design
 
-* The Client ID
-* The Client secret
-* The Redirect URI
+## Directory Structure
 
-Hold on to these for later.
+```
+web-app/
+├── index.html              # Main application page
+├── README.md               # This file
+├── src/
+│   ├── css/
+│   │   └── styles.css      # All application styles
+│   └── js/
+│       ├── spotify-api.js  # Spotify API wrapper
+│       ├── export.js       # Export & format conversion
+│       └── app.js          # Main application logic
+├── docs/
+│   ├── QUICKSTART.md       # 5-minute testing guide
+│   ├── TESTING.md          # 30 comprehensive test cases
+│   └── SUMMARY.md          # Technical overview
+└── tests/
+    └── test-validation.html # Automated validation tests
+```
 
-# Step 2: Install Software to Run Python on Your Compooper
-This entire process revolves around you being able to run a .py file on your computer. This also isn't as tricky as it sounds and there's tons of support online for this. If you already know how to do this feel free to just grab the .py file here and run that thang. But, if you aren't comfy with that, that's totally okay, and we'll work through it here. 
+See [ORGANIZATION.md](ORGANIZATION.md) for detailed explanation of the directory structure.
 
-[ work through it here ]
+## Quick Start
 
+### Option 1: Local Testing
 
-# Step 3: Run export_playlists.py
-Once you've gotten Python up and running, just head to a terminal and run "python export_playlists.py" and it should take it from there. The script will guide you through what to do.
+1. Clone or download this repository
+2. Navigate to the `web-app` directory
+3. Open `index.html` in your browser (or use a local server)
+4. Follow the on-screen instructions
 
-# Step 4: Take a Look
-To make sure everything looks okay. Then, unsubscribe from Spotify, uninstall it, and move on to some other music platforms.
+**Using a local server (recommended):**
+```bash
+cd web-app
+python -m http.server 8000
+# Visit http://localhost:8000
+```
 
-# Step 5: Moving On
-I've been exploring music in the digital world on:
-* Bandcamp
-* NTS Radio
+### Option 2: GitHub Pages (Production)
 
-And other places like:
-* The radio
-* Live shows
-* Physical media (vinyls, casettes)
+1. Fork this repository
+2. Enable GitHub Pages in repository settings (Settings → Pages → Source: `main` branch, `/web-app` folder)
+3. Visit your GitHub Pages URL (usually `https://[username].github.io/byebyespotify/`)
 
-I encourage you to check out any platforms that aren't actively supporting the fascist regime and platforms that compensate their musicians fairly. <3
+## How It Works
 
+### Step 1: Create Spotify Developer App
 
---------
+Users create their own Spotify Developer app to ensure:
+- Complete data privacy (data stays in browser)
+- No backend infrastructure needed
+- User control over credentials
 
-I used ChatGPT to write this script. I typically try to avoid using LLMs right now but this seemed like a justifiable reason to use it. 
+**Process** (~2-3 minutes):
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Click "Create app"
+3. Fill in form with provided values
+4. Copy Client ID and Client Secret
+
+See [docs/design-decisions/authentication-architecture.md](../docs/design-decisions/authentication-architecture.md) for detailed rationale.
+
+### Step 2: Authenticate
+
+1. Enter Client ID, Client Secret, and Redirect URI
+2. Click "Connect to Spotify"
+3. Authorize the app on Spotify's page
+4. Redirected back to web app
+
+### Step 3: Export
+
+1. Click "Export All Playlists"
+2. Wait for export to complete (progress indicator shown)
+3. Download ZIP file containing all playlists
+
+## Source Code Structure
+
+All source code is organized in the `src/` directory:
+
+- **`src/js/`** - JavaScript modules
+  - `spotify-api.js` - Handles OAuth and Spotify API communication
+  - `export.js` - Playlist export logic and format generation (CSV, M3U)
+  - `app.js` - UI coordination and user interaction handling
+
+- **`src/css/`** - Stylesheets
+  - `styles.css` - All application styling
+
+See [ORGANIZATION.md](ORGANIZATION.md) for complete directory explanation.
+
+## Export Structure
+
+Downloaded ZIP file contains:
+
+```
+spotify_export_YYYY-MM-DD.zip
+├── My Playlists/
+│   ├── YYYY-MM-DD - Playlist Name 1/
+│   │   ├── cover.jpg
+│   │   ├── description.txt
+│   │   ├── tracks.csv
+│   │   └── tracks.m3u
+│   └── YYYY-MM-DD - Playlist Name 2/
+│       └── ...
+└── Other Playlists/
+    └── ...
+```
+
+### CSV Format
+
+Columns included:
+- Track Name
+- Artists
+- Album
+- Release Date
+- Duration (ms)
+- Popularity
+- **ISRC** (International Standard Recording Code for accurate matching)
+- Added At
+- Track URL
+
+### M3U Format
+
+Standard M3U playlist format with:
+- Extended info tags (#EXTINF)
+- Duration in seconds
+- Artist - Track Name format
+- Spotify URLs for each track
+
+## Technical Details
+
+### Dependencies
+
+**Required (loaded from CDN):**
+- [JSZip](https://stuk.github.io/jszip/) - ZIP file creation (loaded dynamically)
+
+**No build process required** - pure HTML/CSS/JavaScript.
+
+### Browser Compatibility
+
+- Chrome/Edge: ✅ Fully supported
+- Firefox: ✅ Fully supported
+- Safari: ✅ Fully supported
+- Opera: ✅ Fully supported
+
+**Requirements:**
+- Modern browser with JavaScript enabled
+- Fetch API support (all modern browsers)
+- Blob and File API support
+
+### API Usage
+
+**Spotify API Endpoints Used:**
+- `GET /v1/me` - Get current user
+- `GET /v1/me/playlists` - Get user's playlists
+- `GET /v1/playlists/{id}/tracks` - Get playlist tracks
+
+**Scopes Required:**
+- `playlist-read-private` - Access private playlists
+- `playlist-read-collaborative` - Access collaborative playlists
+
+### OAuth Flow
+
+1. User provides credentials → App generates authorization URL
+2. User redirected to Spotify → Authorizes app
+3. Spotify redirects back with authorization code
+4. App exchanges code for access token
+5. Access token used for API calls
+
+**Security:**
+- Client Secret stored only in sessionStorage (cleared on browser close)
+- Access token never leaves the browser
+- All API calls made directly to Spotify from client
+
+## Development
+
+### Local Development
+
+Simply open `index.html` in a browser. No build process needed.
+
+**For live reload during development**, use a local server:
+
+```bash
+# Using Python
+python -m http.server 8000
+
+# Using Node.js http-server
+npx http-server
+
+# Then visit http://localhost:8000
+```
+
+### Testing
+
+See [`docs/TESTING.md`](docs/TESTING.md) for comprehensive testing procedures.
+
+Run automated validation tests by opening [`tests/test-validation.html`](tests/test-validation.html) in your browser.
+
+### Debugging
+
+Use browser DevTools:
+- Console for error messages
+- Network tab to monitor API calls
+- Application tab to check sessionStorage
+
+## Deployment
+
+### GitHub Pages Deployment
+
+1. Push code to GitHub repository
+2. Go to Settings → Pages
+3. Set source to `main` branch, `/web-app` folder
+4. Save and wait for deployment (~1-2 minutes)
+5. Visit the provided URL
+
+### Custom Domain (Optional)
+
+1. Add `CNAME` file to `web-app/` with your domain
+2. Configure DNS settings with your domain provider
+3. Update Redirect URI in Spotify Developer app
+
+## Troubleshooting
+
+### "Failed to get access token"
+
+**Cause:** Incorrect Client ID, Client Secret, or Redirect URI
+
+**Solution:**
+- Verify credentials from Spotify Developer Dashboard
+- Ensure Redirect URI exactly matches (including http:// and port)
+- Check that you clicked "Save" after creating the app
+
+### "Authentication failed"
+
+**Cause:** OAuth flow interrupted or credentials expired
+
+**Solution:**
+- Clear browser cache and sessionStorage
+- Refresh page and try again
+- Verify Spotify Developer app is still active
+
+### "Export failed"
+
+**Cause:** Network issues or API rate limiting
+
+**Solution:**
+- Check internet connection
+- Wait a few minutes and try again
+- Refresh page and re-authenticate
+
+### Images not downloading
+
+**Cause:** CORS restrictions or expired image URLs
+
+**Solution:**
+- This is normal for some playlists (Spotify's temporary URLs)
+- Most playlist covers should download successfully
+- Missing covers will simply be skipped
+
+### ZIP file not downloading
+
+**Cause:** Browser pop-up blocker or insufficient permissions
+
+**Solution:**
+- Allow downloads from this site
+- Check browser's download permissions
+- Try in a different browser
+
+## Privacy & Security
+
+### What We Collect
+
+**Nothing.** This application:
+- Runs entirely in your browser
+- Makes no server-side requests (except to Spotify's API)
+- Stores no data on any server
+- Uses no analytics or tracking
+- Is fully open source and auditable
+
+### What You Control
+
+- Your Spotify Developer app credentials
+- Your Spotify account access
+- Your exported data (stored locally)
+
+### What Spotify Sees
+
+- That an app with your credentials accessed your playlists
+- Standard OAuth authentication flow
+- API requests for playlist and track data
+
+## Known Limitations
+
+1. **Large Libraries:** Very large libraries (500+ playlists) may take several minutes to export
+2. **Rate Limiting:** Spotify may rate limit if exporting too frequently
+3. **Image URLs:** Some Spotify image URLs are temporary and may expire
+4. **Browser Memory:** Extremely large exports may strain browser memory (consider closing other tabs)
+
+## Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+See main repository LICENSE file.
+
+## Related Documentation
+
+- [Refined Vision](../docs/clarifying-function/refined-vision.md) - Project purpose and philosophy
+- [Research Findings](../docs/clarifying-function/research-with-claude.md) - Transfer tool ecosystem research
+- [Authentication Architecture](../docs/design-decisions/authentication-architecture.md) - Why user-created apps
+
+## Support
+
+For issues or questions:
+1. Check [Troubleshooting](#troubleshooting) section
+2. Review documentation in `docs/` folder
+3. Open an issue on GitHub
+
+---
+
+**Your playlists are worth preserving. This tool helps you take them with you, personality intact.**
