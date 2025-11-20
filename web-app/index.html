@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bye Bye Spotify - Playlist Exporter</title>
+    <link rel="stylesheet" href="src/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bye Bye Spotify</h1>
+            <p class="subtitle">Preserve your playlist artistry before you go</p>
+        </header>
+
+        <!-- Step 1: Setup Instructions -->
+        <section id="setup-section" class="section">
+            <h2>Step 1: Create Your Spotify Developer App</h2>
+            <p class="info-text">
+                To export your playlists, you need to create a Spotify Developer app.
+                This takes 2-3 minutes and ensures your data stays private (it never leaves your browser).
+                <a href="#" id="why-link">Why do I need to do this?</a>
+            </p>
+
+            <div id="why-explanation" class="explanation hidden">
+                <h3>Why User-Created Apps?</h3>
+                <p>
+                    We could host a centralized backend that handles authentication for everyone,
+                    but that would mean:
+                </p>
+                <ul>
+                    <li>Your playlist data would pass through our servers</li>
+                    <li>Ongoing hosting costs and maintenance</li>
+                    <li>You'd have to trust us with your data</li>
+                </ul>
+                <p>
+                    Instead, by creating your own app, <strong>your data never leaves your browser</strong>.
+                    This is more private, sustainable, and aligned with the tool's philosophy of user control.
+                </p>
+                <p>
+                    <a href="../docs/design-decisions/authentication-architecture.md" target="_blank">
+                        Read the full explanation →
+                    </a>
+                </p>
+            </div>
+
+            <div class="instructions">
+                <h3>Quick Guide:</h3>
+                <ol>
+                    <li>
+                        Log into your <a href="https://developer.spotify.com/dashboard" target="_blank">
+                            Spotify Developer Dashboard
+                        </a> with your Spotify user login
+                    </li>
+                    <li>Navigate to your Dashboard:
+                        <ul>
+                            <li><strong>On desktop:</strong> Click on your user profile icon and select "Dashboard"</li>
+                            <li><strong>On mobile:</strong> Click the hamburger menu (☰) at the top right, then "Dashboard"</li>
+                        </ul>
+                    </li>
+                    <li>Accept the "Spotify Developer Terms of Service" (if prompted)</li>
+                    <li>Once you've accessed your dashboard, click <strong>"Create app"</strong></li>
+                    <li>Fill in the form:
+                        <ul>
+                            <li><strong>App name:</strong> byebyespotify (or whatever you like)</li>
+                            <li><strong>App description:</strong> Playlist export tool</li>
+                            <li><strong>Website:</strong> you can skip this entry</li>
+                            <li>
+                                <strong>Redirect URIs:</strong>
+                                <code id="redirect-uri">http://127.0.0.1:8000/</code>
+                                <button onclick="copyToClipboard('redirect-uri')" class="btn-small">Copy</button>
+                                <span class="copy-feedback" id="redirect-uri-feedback">Copied!</span>
+                                <small style="display: block; margin-top: 5px; color: #666;">
+                                    <strong>Auto-detected.</strong> Uses 127.0.0.1 (Spotify requires explicit IP, not "localhost").
+                                </small>
+                            </li>
+                            <li><strong>Which API/SDKs are you planning to use?:</strong> you can skip this entry</li>
+                            <li>Again, accept Spotify's Developer Terms of Service & Design Guidelines</li>
+                        </ul>
+                    </li>
+                    <li>Navigate to your application information page (it should pop up, or navigate back to your Dashboard and access it there)</li>
+                    <li>Copy and paste your app credentials here! We'll take care of the rest :-)</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Step 2: Enter Credentials -->
+        <section id="credentials-section" class="section">
+            <h2>Step 2: Enter Your App Credentials</h2>
+            <form id="credentials-form">
+                <div class="form-group">
+                    <label for="client-id">Client ID:</label>
+                    <input type="text" id="client-id" placeholder="Paste your Client ID here" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-secret">Client Secret:</label>
+                    <input type="password" id="client-secret" placeholder="Paste your Client Secret here" required>
+                    <small>Your credentials are only used in your browser and never sent to our servers</small>
+                </div>
+                <div class="form-group">
+                    <label for="redirect-uri-input">Redirect URI:</label>
+                    <input type="text" id="redirect-uri-input" value="http://127.0.0.1:8000/" required>
+                    <small>Auto-detected (uses 127.0.0.1, not localhost per Spotify requirements).</small>
+                </div>
+                <button type="submit" class="btn-primary">Connect to Spotify</button>
+            </form>
+        </section>
+
+        <!-- Step 3: Export -->
+        <section id="export-section" class="section hidden">
+            <h2>Step 3: Export Your Playlists</h2>
+            <div id="user-info" class="user-info hidden">
+                <p>Connected as: <strong id="username"></strong></p>
+            </div>
+            <button id="export-btn" class="btn-primary btn-large">Export All Playlists</button>
+
+            <div id="progress-section" class="hidden">
+                <h3>Exporting...</h3>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <p id="progress-text">Preparing export...</p>
+            </div>
+
+            <div id="results-section" class="hidden">
+                <h3>Export Complete!</h3>
+                <p id="results-text"></p>
+                <button id="download-btn" class="btn-primary">Download ZIP</button>
+            </div>
+        </section>
+
+        <!-- Error Display -->
+        <div id="error-section" class="error-message hidden">
+            <strong>Error:</strong> <span id="error-text"></span>
+        </div>
+
+        <footer>
+            <p>
+                Your playlists are worth preserving. This tool helps you take them with you, personality intact.
+            </p>
+            <p class="privacy-note">
+                🔒 All processing happens in your browser. Your data never leaves your device.
+            </p>
+        </footer>
+    </div>
+
+    <script src="src/js/spotify-api.js"></script>
+    <script src="src/js/export.js"></script>
+    <script src="src/js/app.js"></script>
+</body>
+</html>
