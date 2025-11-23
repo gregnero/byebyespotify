@@ -7,11 +7,18 @@
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
+    <!-- Floating background clouds -->
+    <img src="images/cloud1.png" alt="" class="cloud cloud1">
+    <img src="images/cloud2.png" alt="" class="cloud cloud2">
+    <img src="images/cloud3.png" alt="" class="cloud cloud3">
+
     <div class="container">
         <header>
             <h1>Bye Bye Spotify</h1>
-            <p class="subtitle">Preserve your playlist artistry before you go</p>
+            <p class="subtitle">Preserve your playlists before you go</p>
         </header>
+
+        <p class="intro-blurb"><em>Leaving Spotify but don't want to lose your playlist covers, author credits, and descriptions? This tool archives and exports it all.</em></p>
 
         <!-- Step 1: Setup Instructions -->
         <section id="setup-section" class="section">
@@ -36,11 +43,6 @@
                 <p>
                     Instead, by creating your own app, <strong>your data never leaves your browser</strong>.
                     This is more private, sustainable, and aligned with the tool's philosophy of user control.
-                </p>
-                <p>
-                    <a href="../docs/design-decisions/authentication-architecture.md" target="_blank">
-                        Read the full explanation →
-                    </a>
                 </p>
             </div>
 
@@ -67,10 +69,11 @@
                             <li><strong>Website:</strong> you can skip this entry</li>
                             <li>
                                 <strong>Redirect URIs:</strong>
-                                <code id="redirect-uri">http://127.0.0.1:8000/</code>
-                                <button onclick="copyToClipboard('redirect-uri')" class="btn-small">Copy</button>
-                                <span class="copy-feedback" id="redirect-uri-feedback">Copied!</span>
-                                <small style="display: block; margin-top: 5px; color: #666;">
+                                <div class="redirect-uri-container">
+                                    <code id="redirect-uri">http://127.0.0.1:8000/</code>
+                                    <button onclick="copyToClipboard('redirect-uri')" class="btn-small">Copy</button>
+                                </div>
+                                <small class="redirect-uri-note">
                                     <strong>Auto-detected.</strong> Uses 127.0.0.1 (Spotify requires explicit IP, not "localhost").
                                 </small>
                             </li>
@@ -78,8 +81,8 @@
                             <li>Again, accept Spotify's Developer Terms of Service & Design Guidelines</li>
                         </ul>
                     </li>
-                    <li>Navigate to your application information page (it should pop up, or navigate back to your Dashboard and access it there)</li>
-                    <li>Copy and paste your app credentials here! We'll take care of the rest :-)</li>
+                    <li>Navigate to your application information page (it should pop up by default, but if something goes awry, navigate back to your Dashboard and access it there)</li>
+                    <li>Copy and paste your app credentials below! We'll take care of the rest :-)</li>
                 </ol>
             </div>
         </section>
@@ -126,6 +129,21 @@
                 <h3>Export Complete!</h3>
                 <p id="results-text"></p>
                 <button id="download-btn" class="btn-primary">Download ZIP</button>
+
+                <div class="next-steps">
+                    <h4>Next Steps</h4>
+                    <p>
+                        You've successfully archived your Spotify playlist data, including all the details — covers, descriptions, and author credits.
+                        To transfer your music to a new platform, check out third-party transfer services like
+                        <a href="https://www.tunemymusic.com/" target="_blank">TuneMyMusic</a>,
+                        <a href="https://soundiiz.com/" target="_blank">Soundiiz</a>, or
+                        <a href="https://musicteleportation.com/" target="_blank">Music Teleportation</a>.
+                    </p>
+                    <p>
+                        <strong>Note:</strong> These services will transfer your tracks, but don't preserve playlist metadata like covers and descriptions.
+                        Use your archived export to restore this info on your new platform!
+                    </p>
+                </div>
             </div>
         </section>
 
@@ -136,7 +154,7 @@
 
         <footer>
             <p>
-                Your playlists are worth preserving. This tool helps you take them with you, personality intact.
+                Your playlists are worth preserving. This tool helps you take them with you in full.
             </p>
             <p class="privacy-note">
                 🔒 All processing happens in your browser. Your data never leaves your device.
