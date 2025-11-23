@@ -261,9 +261,10 @@ async function createZIPFile(data) {
     // Add "My Playlists"
     for (const playlist of data.myPlaylists) {
         const playlistFolder = myPlaylistsFolder.folder(playlist.folderName);
+        playlistFolder.file('title.txt', playlist.title);
+        playlistFolder.file('author.txt', playlist.author);
         playlistFolder.file('description.txt', playlist.description);
         playlistFolder.file('tracks.csv', playlist.csv);
-        playlistFolder.file('tracks.m3u', playlist.m3u);
         if (playlist.coverBlob) {
             playlistFolder.file('cover.jpg', playlist.coverBlob);
         }
@@ -272,9 +273,10 @@ async function createZIPFile(data) {
     // Add "Other Playlists"
     for (const playlist of data.otherPlaylists) {
         const playlistFolder = otherPlaylistsFolder.folder(playlist.folderName);
+        playlistFolder.file('title.txt', playlist.title);
+        playlistFolder.file('author.txt', playlist.author);
         playlistFolder.file('description.txt', playlist.description);
         playlistFolder.file('tracks.csv', playlist.csv);
-        playlistFolder.file('tracks.m3u', playlist.m3u);
         if (playlist.coverBlob) {
             playlistFolder.file('cover.jpg', playlist.coverBlob);
         }

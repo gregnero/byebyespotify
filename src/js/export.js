@@ -87,33 +87,42 @@ class PlaylistExporter {
     }
 
     /**
-     * Create M3U playlist content
+     * Create title text file content
      */
-    createM3U(tracks, playlistName) {
-        let content = '#EXTM3U\n';
-        content += `#PLAYLIST:${playlistName}\n\n`;
-
-        tracks.forEach(item => {
-            const track = item.track;
-            if (!track) return;
-
-            const artists = track.artists ? track.artists.map(a => a.name || '').join(', ') : '';
-            const duration = track.duration_ms ? Math.floor(track.duration_ms / 1000) : 0;
-            const title = track.name || 'Unknown Track';
-            const url = track.external_urls?.spotify || '';
-
-            content += `#EXTINF:${duration},${artists} - ${title}\n`;
-            content += `${url}\n\n`;
-        });
-
-        return content;
+    createTitle(name) {
+        return name || '';
     }
 
     /**
      * Create description text file content
      */
     createDescription(description) {
-        return description || '';
+        if (!description) return '';
+
+        // Decode HTML entities (like &#x27; or &quot;)
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = description;
+        return textarea.value;
+    }
+
+    /**
+     * Create author text file content
+     */
+    createAuthor(owner, followers) {
+        if (!owner) return '';
+
+        let content = `Owner: ${owner.display_name || owner.id}\n`;
+        content += `ID: ${owner.id}\n`;
+        if (owner.external_urls?.spotify) {
+            content += `Profile: ${owner.external_urls.spotify}\n`;
+        }
+
+        // Add followers info if available
+        if (followers && followers.total !== undefined) {
+            content += `\nPlaylist Followers: ${followers.total}`;
+        }
+
+        return content;
     }
 
     /**
@@ -172,10 +181,11 @@ class PlaylistExporter {
                 const playlistData = {
                     folderName: folderName,
                     name: playlistName,
+                    title: this.createTitle(playlist.name),
                     description: this.createDescription(playlist.description),
+                    author: this.createAuthor(playlist.owner, playlist.followers),
                     coverBlob: coverBlob,
                     csv: this.createCSV(trackItems),
-                    m3u: this.createM3U(trackItems, playlistName),
                     trackCount: trackItems.length
                 };
 
