@@ -5,15 +5,16 @@ A client-side web application for exporting Spotify playlists with complete pres
 ## Features
 
 - **Complete Playlist Preservation**
+  - Playlist titles (with all special characters preserved)
+  - Playlist authors and contributor information
   - Custom cover images
   - Playlist descriptions
   - Full track metadata including ISRC codes
   - Date-stamped folder organization
 
-- **Multiple Export Formats**
+- **Export Formats**
   - CSV (with ISRC codes for accurate track matching)
-  - M3U (universal playlist format)
-  - Description text files
+  - Title, author, and description text files
   - Cover images (JPEG)
 
 - **Privacy-First Architecture**
@@ -31,9 +32,10 @@ A client-side web application for exporting Spotify playlists with complete pres
 ## Directory Structure
 
 ```
-web-app/
+byebyespotify/
 ├── index.html              # Main application page
 ├── README.md               # This file
+├── images/                 # Cloud decoration images
 ├── src/
 │   ├── css/
 │   │   └── styles.css      # All application styles
@@ -42,14 +44,13 @@ web-app/
 │       ├── export.js       # Export & format conversion
 │       └── app.js          # Main application logic
 ├── docs/
-│   ├── QUICKSTART.md       # 5-minute testing guide
-│   ├── TESTING.md          # 30 comprehensive test cases
-│   └── SUMMARY.md          # Technical overview
+│   ├── QUICKSTART.md       # Quick testing guide
+│   ├── TESTING.md          # Comprehensive test cases
+│   ├── DEPLOYMENT.md       # Deployment instructions
+│   └── SPOTIFY-REQUIREMENTS.md # Spotify API requirements
 └── tests/
     └── test-validation.html # Automated validation tests
 ```
-
-See [ORGANIZATION.md](ORGANIZATION.md) for detailed explanation of the directory structure.
 
 ## Quick Start
 
@@ -88,8 +89,6 @@ Users create their own Spotify Developer app to ensure:
 3. Fill in form with provided values
 4. Copy Client ID and Client Secret
 
-See [docs/design-decisions/authentication-architecture.md](../docs/design-decisions/authentication-architecture.md) for detailed rationale.
-
 ### Step 2: Authenticate
 
 1. Enter Client ID, Client Secret, and Redirect URI
@@ -109,13 +108,11 @@ All source code is organized in the `src/` directory:
 
 - **`src/js/`** - JavaScript modules
   - `spotify-api.js` - Handles OAuth and Spotify API communication
-  - `export.js` - Playlist export logic and format generation (CSV, M3U)
+  - `export.js` - Playlist export logic and format generation
   - `app.js` - UI coordination and user interaction handling
 
 - **`src/css/`** - Stylesheets
   - `styles.css` - All application styling
-
-See [ORGANIZATION.md](ORGANIZATION.md) for complete directory explanation.
 
 ## Export Structure
 
@@ -125,10 +122,11 @@ Downloaded ZIP file contains:
 spotify_export_YYYY-MM-DD.zip
 ├── My Playlists/
 │   ├── YYYY-MM-DD - Playlist Name 1/
-│   │   ├── cover.jpg
-│   │   ├── description.txt
-│   │   ├── tracks.csv
-│   │   └── tracks.m3u
+│   │   ├── title.txt         # Full playlist name with special characters
+│   │   ├── author.txt         # Owner info and follower count
+│   │   ├── description.txt    # Playlist description
+│   │   ├── cover.jpg          # Playlist cover image
+│   │   └── tracks.csv         # Track metadata with ISRC codes
 │   └── YYYY-MM-DD - Playlist Name 2/
 │       └── ...
 └── Other Playlists/
@@ -137,7 +135,7 @@ spotify_export_YYYY-MM-DD.zip
 
 ### CSV Format
 
-Columns included:
+Track metadata includes:
 - Track Name
 - Artists
 - Album
@@ -147,14 +145,6 @@ Columns included:
 - **ISRC** (International Standard Recording Code for accurate matching)
 - Added At
 - Track URL
-
-### M3U Format
-
-Standard M3U playlist format with:
-- Extended info tags (#EXTINF)
-- Duration in seconds
-- Artist - Track Name format
-- Spotify URLs for each track
 
 ## Technical Details
 
@@ -337,12 +327,6 @@ Contributions welcome! Please:
 ## License
 
 See main repository LICENSE file.
-
-## Related Documentation
-
-- [Refined Vision](../docs/clarifying-function/refined-vision.md) - Project purpose and philosophy
-- [Research Findings](../docs/clarifying-function/research-with-claude.md) - Transfer tool ecosystem research
-- [Authentication Architecture](../docs/design-decisions/authentication-architecture.md) - Why user-created apps
 
 ## Support
 
