@@ -286,6 +286,10 @@ h1 {
     margin: 20px 0;
 }
 
+.progress-section {
+    margin-top: 15px;
+}
+
 .progress-fill {
     height: 100%;
     background: #1DB954;
@@ -309,6 +313,10 @@ h1 {
 #results-section h3 {
     color: #1DB954;
     margin-bottom: 10px;
+}
+
+.download-btn {
+    margin-top: 15px;
 }
 
 .next-steps {
